@@ -1,0 +1,14 @@
+# Summary of changes for run 9d8236e4-bd59-44d6-b62f-d879cc0c43b1
+The formalization of the article is now complete: the project builds with no `sorry` and every result depends only on the standard axioms (`propext`, `Classical.choice`, `Quot.sound`).
+
+What was still open when I picked the project up was the last unproved lemma, `lemma:red-blue-equiv-straighten-to-zero` ("a multiset of tableaux reduced to semistandard tableaux contains each of them equally often red and blue if and only if the original bracket polynomial straightens to zero"), together with everything that rested on it (the main theorem, its corollary, `lemma:remove-common-factors`, `lemma:generic-geometric-balancing`, `lemma:generic-orientation-independent`).
+
+New file `RequestProject/RedBlue.lean` (each declaration carries a docstring pointing at the corresponding passage of the source):
+
+* the exchange rules do not change the bracket polynomial — a permutation of a column multiplies the bracket by the sign, a repeated entry makes it vanish, and an exchange is handled by Sylvester's exchange identity — so reduction preserves the bracket polynomial (`reducesTo_eval`);
+* grouping the tableaux of a multiset by their product of columns, weighted by the signed count (red minus blue), which gives the easy direction: a red-blue balanced multiset evaluates to zero at every matrix;
+* the converse, i.e. the linear independence of the semistandard tableaux, by a leading-monomial argument: for the lexicographic monomial order on the variables of the generic matrix (row first, then vertex), the leading monomial of the bracket of a strictly increasing column is the diagonal monomial with coefficient one, so the leading monomial of a semistandard tableau records the multiset of entries of each of its rows — and a semistandard tableau can be read back from those row multisets (`colsExp_injective`), so distinct semistandard tableaux have distinct leading monomials.
+
+One correction to the statement: as formalized, the lemma is false for tableaux of height `n = 0` (every bracket is then the determinant of the empty matrix, so one red tableau with no column and one blue tableau with one column is reduced, semistandard, has bracket polynomial `1 - 1 = 0`, and is not red-blue balanced). I formalized this counterexample (`not_redBlue_equiv_straightensToZero_of_height_zero`) and proved the lemma with the hypothesis `0 < n`, which the article leaves implicit since its tableaux have `n = d + 1` rows and which is available at every place the lemma is used. The original statement is kept, commented out with an explanation, in `RequestProject/Tableaux.lean`; `lemma_remove_common_factors` in `RequestProject/Results.lean` gained the same hypothesis.
+
+I also updated the formalization map `PAPER-TO-LEAN.md` (new file, new statuses, and the caveat about `0 < n`), and cleaned up the linter warnings in the new file. All work is committed and pushed.
